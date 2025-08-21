@@ -36,6 +36,7 @@ function App() {
         <button onClick={fetchData} disabled={isLoading}>
           {isLoading ? '로딩 중...' : '백엔드 데이터 요청'}
         </button>
+        test
         <button onClick={clear}>
           {'초기화'}
         </button>
