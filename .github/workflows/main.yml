@@ -51,7 +51,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "BackEnd/build/libs/*.jar"
+          source: "BackEnd/build/libs/*-SNAPSHOT.jar"
           target: "/home/ubuntu/app"
 
       # 7. EC2 인스턴스에서 애플리케이션 실행 스크립트 실행 (SSH)
@@ -69,4 +69,4 @@ jobs:
             
             # 새로 배포된 JAR 파일을 백그라운드에서 실행합니다.
             # 로그는 /dev/null로 보내 출력을 남기지 않습니다.
-            nohup java -jar /home/ubuntu/app/BackEnd/build/libs/*.jar > /dev/null 2>&1 &
+            nohup java -jar /home/ubuntu/app/*-SNAPSHOT.jar > /dev/null 2>&1 &
