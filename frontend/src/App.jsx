@@ -1,36 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import axios from 'axios';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [message, setMessage] = useState('아래 버튼을 눌러주세요.');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    setMessage('데이터를 불러오는 중...');
+
+    try {
+      const response = await axios.get('/api/test');
+      console.log("전체 응답:", response);
+      setMessage(response.data);
+    } catch (error) {
+      console.error("데이터 로딩 중 에러 발생:", error);
+      setMessage("데이터를 불러오는 데 실패했습니다.");
+    } finally {
+      setIsLoading(false); 
+    }
+  };
+
+  const clear = async () => {
+    setIsLoading(false);
+    setMessage('데이터를 불러오는 중...');
+  };
+
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-          For Second Test
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="App">
+      <header className="App-header">
+        
+        {/* 버튼 클릭 시 fetchData 함수를 호출. isLoading이 true일 때는 비활성화 */}
+        <button onClick={fetchData} disabled={isLoading}>
+          {isLoading ? '로딩 중...' : '백엔드 데이터 요청'}
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+        <button onClick={clear}>
+          {'초기화'}
+        </button>
+        {/* API 응답 결과를 화면에 표시 */}
+        <p>{message}</p>
+      </header>
+    </div>
+  );
 }
 
-export default App
+export default App;
