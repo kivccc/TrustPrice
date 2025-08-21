@@ -1,73 +1,95 @@
-    plugins {
-        id 'java'
-        id 'org.springframework.boot' version '3.5.4'
-        id 'io.spring.dependency-management' version '1.1.7'
-        id("com.github.node-gradle.node") version "7.0.2"
-    }
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id("com.github.node-gradle.node") version "7.0.2"
+}
 
-    group = 'com.tp'
-    version = '0.0.1-SNAPSHOT'
-    description = 'BackEnd'
+group = 'com.tp'
+version = '0.0.1-SNAPSHOT'
+description = 'BackEnd'
 
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
-        }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
     }
+}
 
-    repositories {
-        mavenCentral()
-    }
+repositories {
+    mavenCentral()
+}
 
-    dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter'
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    }
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
 
-    tasks.named('test') {
-        useJUnitPlatform()
-    }
+tasks.named('test') {
+    useJUnitPlatform()
+}
 
-    // 1. Node.js/npm 버전을 설정하고, 자동으로 설치되도록 함
-    node {
-        version.set("20.19.4") // 설치할 Node.js 버전
-        npmVersion.set("10.8.2")
-        download.set(true)
-        workDir.set(file("${project.projectDir}/.gradle/nodejs"))
-        npmWorkDir.set(file("${project.projectDir}/.gradle/npm"))
-    }
+// 1. Node.js/npm 버전을 설정하고, 자동으로 설치되도록 함
+node {
+    version.set("20.19.4") // 설치할 Node.js 버전
+    npmVersion.set("10.8.2")
+    download.set(true)
+    workDir.set(file("${project.projectDir}/.gradle/nodejs"))
+    npmWorkDir.set(file("${project.projectDir}/.gradle/npm"))
+}
 
-    // 프론트엔드 디렉토리 변수 설정 (TrustPrice/frontend)
-    def frontendDir = file('../frontend')
-    if (!frontendDir.exists()) {
-        throw new GradleException("Frontend directory not found at: ${frontendDir.absolutePath}")
-    }
+// 프론트엔드 디렉토리 변수 설정 (TrustPrice/frontend)
+def frontendDir = file('../frontend')
+if (!frontendDir.exists()) {
+    throw new GradleException("Frontend directory not found at: ${frontendDir.absolutePath}")
+}
 
-    // 기존 npmInstall 작업 설정 (플러그인이 자동 생성)
-    tasks.named('npmInstall') {
-        workingDir = frontendDir
-    }
 
-    // npm build 작업
-    tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
-        dependsOn 'npmInstall'
-        workingDir = frontendDir
-        args = ['run', 'build']
-    }
 
-    // React 빌드 결과물을 Spring Boot 정적 리소스로 복사
-    tasks.register('copyFrontendBuild', Copy) {
-        dependsOn 'npmBuild'
-        from '../frontend/dist'
-        into layout.buildDirectory.dir('resources/main/static')
-    }
+// 기존 npmInstall 작업 설정 (플러그인이 자동 생성)
+/*
+tasks.named('npmInstall') {
+    workingDir = frontendDir
+}
 
-    tasks.named('processResources') {
-        dependsOn 'copyFrontendBuild'
-    }
 
-    tasks.named('bootJar') {
-        dependsOn 'copyFrontendBuild'
-    }
+
+// npm build 작업
+tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
+    dependsOn 'npmInstall'
+    workingDir = frontendDir
+    args = ['run', 'build']
+}
+*/
+
+
+tasks.register('npmCi', com.github.gradle.node.npm.task.NpmTask) {
+    description = "Installs dependencies from package-lock.json"
+    workingDir = frontendDir
+    args = ['ci']
+}
+
+tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
+    // **의존성을 npmCi로 변경**
+    dependsOn 'npmCi'
+    workingDir = frontendDir
+    args = ['run', 'build']
+}
+
+
+
+// React 빌드 결과물을 Spring Boot 정적 리소스로 복사
+tasks.register('copyFrontendBuild', Copy) {
+    dependsOn 'npmBuild'
+    from '../frontend/dist'
+    into layout.buildDirectory.dir('resources/main/static')
+}
+
+tasks.named('processResources') {
+    dependsOn 'copyFrontendBuild'
+}
+
+tasks.named('bootJar') {
+    dependsOn 'copyFrontendBuild'
+}
