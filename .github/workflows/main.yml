@@ -69,4 +69,5 @@ jobs:
             
             # 새로 배포된 JAR 파일을 백그라운드에서 실행합니다.
             # 로그는 /dev/null로 보내 출력을 남기지 않습니다.
-            nohup java -jar /home/ubuntu/app/*-SNAPSHOT.jar > /dev/null 2>&1 &
+            nohup java -jar /home/ubuntu/app/BackEnd/build/libs/*.jar > > /dev/null 2>&1 &
+            
