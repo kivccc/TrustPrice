@@ -41,7 +41,7 @@ jobs:
       # 5. Gradle을 이용한 프로젝트 빌드 (스프링 부트 + 리액트)
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
-        working-directory: ./BackEnd
+
 
       # 6. 빌드된 JAR 파일을 EC2 인스턴스로 복사 (SCP)
       - name: Transfer JAR to EC2
