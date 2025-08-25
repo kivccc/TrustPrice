@@ -1,0 +1,67 @@
+/* 페이지 전체를 감싸는 컨테이너 */
+.pageContainer {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.pageContainer h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+/* 메뉴 선택 버튼 그룹 (ItemPriceListPage와 동일한 스타일 유지) */
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+  justify-content: center; /* 버튼을 중앙에 배치 */
+}
+
+.buttonGroup button {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.2s;
+}
+
+.buttonGroup button:hover {
+  background-color: #e9e9e9;
+  border-color: #bbb;
+}
+
+/* 활성화된 버튼 스타일 */
+.buttonGroup button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
+
+/* 차트를 감싸는 컨테이너 */
+.chartContainer {
+  margin-top: 30px;
+  /* 차트의 최대 너비를 제한하여 너무 커지는 것을 방지 */
+  max-width: 900px;
+  /* 컨테이너를 페이지 중앙에 배치 */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ================================== */
+/* ## 모바일 반응형 스타일 (768px 이하) ## */
+/* ================================== */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 15px; /* 모바일에서 내부 여백을 약간 줄임 */
+  }
+
+  .pageContainer h2 {
+    font-size: 1.5em; /* 제목 폰트 크기 조정 */
+  }
+}
