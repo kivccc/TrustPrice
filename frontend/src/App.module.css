@@ -1,0 +1,27 @@
+.appContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mainNav {
+  background-color: #333;
+  padding: 15px 30px;
+  display: flex;
+  gap: 20px;
+}
+
+.mainNav a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+
+.mainNav a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .mainNav {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,18 @@
+/* 앱의 모든 페이지에 적용될 기본 스타일 */
+body {
+  font-family: sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  color: #333;
+}
+
+main {
+  padding: 20px;
+}
+
+/* 모바일 화면에서 main 영역 패딩 줄이기 */
+@media (max-width: 768px) {
+  main {
+    padding: 10px;
+  }
+}

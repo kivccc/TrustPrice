@@ -1,49 +1,84 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './App.css';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import * as XLSX from 'xlsx';
+import PriceChartPage from './pages/PriceChartPage';
+import RawDataPage from './pages/RawDataPage';
+import ItemPriceListPage from './pages/ItemPriceListPage';
+import ItemMapPage from './pages/ItemMapPage';
+import ItemSearchPage from './pages/ItemSearchPage';
+import styles from './App.module.css';
 
 function App() {
-  const [message, setMessage] = useState('아래 버튼을 눌러주세요.');
-  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [headers, setHeaders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    setMessage('데이터를 불러오는 중...');
 
-    try {
-      const response = await axios.get('/api/test');
-      console.log("전체 응답:", response);
-      setMessage(response.data);
-    } catch (error) {
-      console.error("데이터 로딩 중 에러 발생:", error);
-      setMessage("데이터를 불러오는 데 실패했습니다.");
-    } finally {
-      setIsLoading(false); 
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/data.xlsx');
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        
+        if (jsonData.length > 0) {
+          setHeaders(Object.keys(jsonData[0]));
+          setData(jsonData);
+        }
+    console.log(data);
 
-  const clear = async () => {
-    setIsLoading(false);
-    setMessage('데이터를 불러오는 중...');
-  };
+      } catch (error) {
+        console.error("엑셀 파일 로딩 오류:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
+  if (loading) {
+    return <div>데이터 로딩 중...</div>;
+  }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        
-        {/* 버튼 클릭 시 fetchData 함수를 호출. isLoading이 true일 때는 비활성화 */}
-        <button onClick={fetchData} disabled={isLoading}>
-          {isLoading ? '로딩 중...' : '백엔드 데이터 요청'}
-        </button>
-        test
-        <button onClick={clear}>
-          {'초기화'}
-        </button>
-        {/* API 응답 결과를 화면에 표시 */}
-        <p>{message}</p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className={styles.appContainer}>
+        <nav className={styles.mainNav}>
+          <Link to="/"> 🔍 제품 검색</Link>
+          <Link to="/map">📍 외식 지도 보기</Link>
+          <Link to="/list">🍽️ 외식 메뉴별 가격</Link>
+          <Link to="/chart">📊 외식 가격 비교 차트</Link>
+          <Link to="/table">📋 전체 외식 데이터</Link>
+        </nav>
+        <main>
+          <Routes>
+            <Route
+              path="/"
+              element={<ItemSearchPage/>}
+            />
+            <Route 
+              path="/map" 
+              element={<ItemMapPage data={data} headers={headers} />} 
+            />
+            <Route 
+              path="/list" 
+              element={<ItemPriceListPage data={data} headers={headers} />} 
+            />
+            <Route 
+              path="/chart" 
+              element={<PriceChartPage data={data} headers={headers} />} 
+            />
+            <Route 
+              path="/table" 
+              element={<RawDataPage data={data} headers={headers} />} 
+            />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 
