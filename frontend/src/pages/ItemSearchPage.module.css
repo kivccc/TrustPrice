@@ -45,31 +45,31 @@ h2 {
   margin-top: 20px;
 }
 
-.result-card {
+.resultCard {
   display: flex;
   flex-direction: column;
   padding: 15px 20px;
   border-radius: 12px;
   background-color: #fff;
-  border: 1px solid #e0e0e0;
+  border: 12px solid #e0e0e0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   cursor: pointer;
 }
 
-.result-card:hover {
+.resultCard:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.card-header {
+.cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
 
-.product-name {
+.productName {
   font-weight: 600;
   font-size: 17px;
   color: #333;
@@ -81,7 +81,7 @@ h2 {
   color: #007bff;
 }
 
-.card-body {
+.cardBody {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
@@ -92,11 +92,11 @@ h2 {
   font-style: italic;
 }
 
-.survey-date {
+.surveyDate {
   color: #888;
 }
 
-.no-results {
+.noResults {
   text-align: center;
   color: #999;
   padding: 15px 0;
