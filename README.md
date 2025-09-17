@@ -41,7 +41,7 @@ https://datalab.visitkorea.or.kr/site/portal/ex/bbs/View.do?cbIdx=1135&bcIdx=309
 - **빌드 도구:** **Gradle**
 - **주요 라이브러리:**
   - `Apache Commons Text`: **Fuzzy Score** 알고리즘을 이용한 유사 문자열 검색 기능
-- **테스트:** **JUnit 5**
+
 
 ### **Frontend**
 - **프레임워크:** **React**
