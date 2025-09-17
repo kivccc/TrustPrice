@@ -77,3 +77,16 @@ https://datalab.visitkorea.or.kr/site/portal/ex/bbs/View.do?cbIdx=1135&bcIdx=309
 - **전체 데이터 조회**
   - 분석에 사용된 외식비 원본 데이터를 테이블 형태로 제공하여 투명하게 모든 정보를 확인할 수 있습니다.
 
+<p align="center">
+  한국소비자원_생필품 가격 정보 전처리 전 예시
+  <img width="800" alt="공산품가격데이터전처리전" src="https://github.com/user-attachments/assets/3c897f30-e5f4-48d9-b38e-30dc80d8a015" />
+</p>
+<p align="center">
+  한국소비자원_생필품 가격 정보 전처리 후 예시
+  <img width="950" height="103" alt="공산품가격데이터전처리후" src="https://github.com/user-attachments/assets/9a3837fa-f0a9-4902-95c0-9754e92edecf" />
+</p>
+    
+<p align="center">
+  <img width="800"  alt="검색기능사진2" src="https://github.com/user-attachments/assets/1e6ae014-c731-4939-89be-343c5e5db409" />
+</p>
+
