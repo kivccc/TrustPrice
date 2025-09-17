@@ -27,7 +27,6 @@ public class ProductService {
         List<ProductWithScore> scoredProducts = productRepository.findAll().stream()
                 .map(p -> {
                     boolean matchKorean = p.getName().toLowerCase().contains(lowerQuery);
-
                     int maxScore = Arrays.stream(p.getRoman_name().split(" "))
                             .mapToInt(word -> fuzzy.fuzzyScore(word.toLowerCase(), lowerQuery))
                             .max().orElse(0);

@@ -1,28 +1,28 @@
 package com.tp.backend.repository;
 
 import com.tp.backend.domain.Product;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.text.similarity.FuzzyScore;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.util.stream.Collectors;
-@Slf4j
+
+
 @Repository
-public class ProductRepository {
-    private final List<Product> products = new ArrayList<>();
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Value("classpath:preprocessed_data_romanized.csv")
-    private Resource resource;
+    List<Product> findByName(String name);
 
+    /*
     @PostConstruct
     public void init() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
@@ -52,9 +52,6 @@ public class ProductRepository {
         return Collections.unmodifiableList(products);
     }
 
-    public List<Product> findByName(String name) {
-        return products.stream()
-                .filter(product -> product.getName().contains(name))
-                .collect(Collectors.toList());
-    }
+    */
+
 }
