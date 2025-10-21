@@ -6,12 +6,11 @@ on:
   push:
     branches: [ "main" ]
 
-
 # 실행될 작업(Job) 정의
 jobs:
   build-and-deploy:
     # 작업이 실행될 가상 머신 환경
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latestㅁ
 
     # 작업의 단계(Step)들
     steps:
@@ -43,8 +42,21 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test --no-daemon
         working-directory: ./BackEnd
+        
+      # 6. EC2에 배포된 기존 JAR 파일 삭제
+      - name: Clean up old artifacts on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            # 기존에 배포되어 있던 JAR 파일을 삭제합니다.
+            rm -f /home/ubuntu/app/*-SNAPSHOT.jar
+            echo "Old JAR file deleted."
 
-      # 6. GCP 키 파일을 EC2 인스턴스에 생성 (SSH를 통해)
+      # 7. GCP 키 파일을 EC2 인스턴스에 생성 (SSH를 통해)
       - name: Create GCP credentials file on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -57,7 +69,7 @@ jobs:
             echo "${{ secrets.GCP_SA_KEY_JSON }}" > /home/ubuntu/app/gcp-key.json
             echo "GCP key file created."
 
-      # 7. 빌드된 JAR 파일을 EC2 인스턴스로 복사 (SCP)
+      # 8. 빌드된 JAR 파일을 EC2 인스턴스로 복사 (SCP)
       - name: Transfer JAR to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -68,7 +80,7 @@ jobs:
           source: "BackEnd/build/libs/*-SNAPSHOT.jar"
           target: "/home/ubuntu/app"
 
-      # 8. EC2 인스턴스에서 애플리케이션 실행 스크립트 실행 (환경 변수 설정 포함)
+      # 9. EC2 인스턴스에서 애플리케이션 실행 스크립트 실행 (환경 변수 설정 및 로그 파일 생성)
       - name: Execute deployment script on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -78,13 +90,11 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             # 기존에 실행 중이던 Java 애플리케이션 프로세스를 종료합니다.
-            pgrep java | xargs kill --9 || true
+            pgrep java | xargs kill -9 || true
             
             # GOOGLE_APPLICATION_CREDENTIALS 환경 변수를 설정합니다.
-            # 이 환경 변수는 Spring Cloud GCP가 인증 키 파일을 찾는 데 사용됩니다.
             export GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/app/gcp-key.json
             
-            # 새로 배포된 JAR 파일을 백그라운드에서 실행합니다.
-            # nohup 명령어에 env를 사용하여 환경 변수를 명시적으로 전달합니다.
-            nohup env GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS java -jar /home/ubuntu/app/*-SNAPSHOT.jar > /dev/null 2>&1 &
+            # 새로 배포된 JAR 파일을 백그라운드에서 실행하고, app.log 파일에 로그를 기록합니다.
+            nohup env GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS java -jar /home/ubuntu/app/*-SNAPSHOT.jar > /home/ubuntu/app/app.log 2>&1 &
 
