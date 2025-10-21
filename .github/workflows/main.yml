@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            # 기존에 배포되어 있던 JAR 파일을 삭제합니다.
+            # 기존에 배포되어 있던 JAR 파일을 삭제
             rm -f /home/ubuntu/app/*-SNAPSHOT.jar
             echo "Old JAR file deleted."
 
@@ -65,7 +65,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            # GitHub Secrets 값을 EC2의 지정된 경로에 파일로 생성합니다.
+            # GitHub Secrets 값을 EC2의 지정된 경로에 파일로 생성
             echo "${{ secrets.GCP_SA_KEY_JSON }}" > /home/ubuntu/app/gcp-key.json
             echo "GCP key file created."
 
@@ -89,12 +89,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            # 기존에 실행 중이던 Java 애플리케이션 프로세스를 종료합니다.
+            # 기존에 실행 중이던 Java 애플리케이션 프로세스를 종료
             pgrep java | xargs kill -9 || true
             
-            # GOOGLE_APPLICATION_CREDENTIALS 환경 변수를 설정합니다.
-            export GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/app/gcp-key.json
-            
-            # 새로 배포된 JAR 파일을 백그라운드에서 실행하고, app.log 파일에 로그를 기록합니다.
-            nohup env GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS java -jar /home/ubuntu/app/*-SNAPSHOT.jar > /home/ubuntu/app/app.log 2>&1 &
+            # nohup으로 백그라운드 실행 시, 명령어 앞에 환경 변수를 직접 지정하여 전달
+            nohup GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/app/gcp-key.json java -jar /home/ubuntu/app/*-SNAPSHOT.jar > /home/ubuntu/app/app.log 2>&1 &
 
