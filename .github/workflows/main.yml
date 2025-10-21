@@ -6,6 +6,7 @@ on:
   push:
     branches: [ "main" ]
 
+
 # 실행될 작업(Job) 정의
 jobs:
   build-and-deploy:
