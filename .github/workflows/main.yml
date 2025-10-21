@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-deploy:
     # 작업이 실행될 가상 머신 환경
-    runs-on: ubuntu-latestㅁ
+    runs-on: ubuntu-latest
 
     # 작업의 단계(Step)들
     steps:
