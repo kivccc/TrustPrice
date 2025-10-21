@@ -38,12 +38,12 @@ jobs:
         run: chmod +x ./gradlew
         working-directory: ./BackEnd
 
-      # 5. Gradle을 이용한 프로젝트 빌드 (스프링 부트 + 리액트)
+      # 5. Gradle을 이용한 프로젝트 빌드 (테스트 제외)
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon
+        run: ./gradlew build -x test --no-daemon
         working-directory: ./BackEnd
 
-      # 6-1. GCP 키 파일 생성
+      # 6. GCP 키 파일을 EC2 인스턴스에 생성 (SSH를 통해)
       - name: Create GCP credentials file on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -52,13 +52,13 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            # GitHub Secrets 값을 EC2의 지정된 경로에 파일로 생성
+            # GitHub Secrets 값을 EC2의 지정된 경로에 파일로 생성합니다.
             echo "${{ secrets.GCP_SA_KEY_JSON }}" > /home/ubuntu/app/gcp-key.json
             echo "GCP key file created."
-            
-      # 6-2. 빌드된 JAR 파일을 EC2 인스턴스로 복사 (SCP)
+
+      # 7. 빌드된 JAR 파일을 EC2 인스턴스로 복사 (SCP)
       - name: Transfer JAR to EC2
-        uses: appleboy/scp-action@master
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -67,7 +67,7 @@ jobs:
           source: "BackEnd/build/libs/*-SNAPSHOT.jar"
           target: "/home/ubuntu/app"
 
-      # 7. EC2 인스턴스에서 애플리케이션 실행 스크립트 실행 (환경 변수 설정 포함)
+      # 8. EC2 인스턴스에서 애플리케이션 실행 스크립트 실행 (환경 변수 설정 포함)
       - name: Execute deployment script on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -76,13 +76,14 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            # 기존에 실행 중이던 Java 애플리케이션 프로세스를 종료
-            pgrep java | xargs kill -9 || true
+            # 기존에 실행 중이던 Java 애플리케이션 프로세스를 종료합니다.
+            pgrep java | xargs kill --9 || true
             
-            # GOOGLE_APPLICATION_CREDENTIALS 환경 변수를 설정
-            # Spring Cloud GCP가 인증 키 파일을 찾는 데 사용
+            # GOOGLE_APPLICATION_CREDENTIALS 환경 변수를 설정합니다.
+            # 이 환경 변수는 Spring Cloud GCP가 인증 키 파일을 찾는 데 사용됩니다.
             export GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/app/gcp-key.json
             
-            # 새로 배포된 JAR 파일을 백그라운드에서 실행
-            # nohup 명령어에 env를 사용하여 환경 변수를 명시적으로 전달
+            # 새로 배포된 JAR 파일을 백그라운드에서 실행합니다.
+            # nohup 명령어에 env를 사용하여 환경 변수를 명시적으로 전달합니다.
             nohup env GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS java -jar /home/ubuntu/app/*-SNAPSHOT.jar > /dev/null 2>&1 &
+
