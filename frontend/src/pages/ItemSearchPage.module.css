@@ -103,3 +103,70 @@ h2 {
   font-style: italic;
 }
 
+/* ItemSearchPage.module.css 에 추가 */
+.uploadButton {
+  padding: 10px 15px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  vertical-align: middle; /* 입력 필드와 수직 정렬 */
+}
+
+.uploadButton:hover {
+  background-color: #e0e0e0;
+}
+
+.uploadButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.loading, .error {
+  text-align: center;
+  margin-top: 15px;
+  font-style: italic;
+}
+
+.error {
+    color: red;
+}
+
+/* Optional: Adjust input wrapper for button */
+.searchInputWrapper {
+  display: flex; /* Flexbox 레이아웃 사용 */
+  align-items: center; /* 요소들을 수직 중앙 정렬 */
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.searchInput {
+  flex-grow: 1; /* 입력 필드가 남은 공간을 채우도록 함 */
+  margin-right: 10px; /* 버튼과의 간격 */
+  /* 기존 스타일 유지 */
+  padding: 12px 15px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.searchInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.searchTooltip {
+  position: absolute; /* 절대 위치 지정 */
+  top: -25px; /* 입력 필드 위로 이동 */
+  left: 0;
+  width: 100%;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
