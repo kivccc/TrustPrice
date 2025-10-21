@@ -43,20 +43,8 @@ jobs:
         run: ./gradlew build -x test --no-daemon
         working-directory: ./BackEnd
         
-      # 6. EC2에 배포된 기존 JAR 파일 삭제
-      - name: Clean up old artifacts on EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          script: |
-            # 기존에 배포되어 있던 JAR 파일을 삭제
-            rm -f /home/ubuntu/app/*-SNAPSHOT.jar
-            echo "Old JAR file deleted."
 
-      # 7. GCP 키 파일을 EC2 인스턴스에 생성 (SSH를 통해)
+      # 6. GCP 키 파일을 EC2 인스턴스에 생성 (SSH를 통해)
       - name: Create GCP credentials file on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -93,5 +81,5 @@ jobs:
             pgrep java | xargs kill -9 || true
             
             # nohup으로 백그라운드 실행 시, 명령어 앞에 환경 변수를 직접 지정하여 전달
-            nohup GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/app/gcp-key.json java -jar /home/ubuntu/app/*-SNAPSHOT.jar > /home/ubuntu/app/app.log 2>&1 &
+            nohup GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/app/gcp-key.json java -jar /home/ubuntu/app/BackEnd/build/libs/*.jar > /home/ubuntu/app/app.log 2>&1 &
 
