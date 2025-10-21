@@ -43,21 +43,7 @@ jobs:
         run: ./gradlew build -x test --no-daemon
         working-directory: ./BackEnd
         
-
-      # 6. GCP 키 파일을 EC2 인스턴스에 생성 (SSH를 통해)
-      - name: Create GCP credentials file on EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          script: |
-            # GitHub Secrets 값을 EC2의 지정된 경로에 파일로 생성
-            echo "${{ secrets.GCP_SA_KEY_JSON }}" > /home/ubuntu/app/gcp-key.json
-            echo "GCP key file created."
-
-      # 8. 빌드된 JAR 파일을 EC2 인스턴스로 복사 (SCP)
+      # 6. 빌드된 JAR 파일을 EC2 인스턴스로 복사 (SCP)
       - name: Transfer JAR to EC2
         uses: appleboy/scp-action@master
         with:
@@ -68,7 +54,7 @@ jobs:
           source: "BackEnd/build/libs/*-SNAPSHOT.jar"
           target: "/home/ubuntu/app"
 
-      # 9. EC2 인스턴스에서 애플리케이션 실행 스크립트 실행 (환경 변수 설정 및 로그 파일 생성)
+      # 7. EC2 인스턴스에서 애플리케이션 실행 스크립트 실행 (환경 변수 설정 및 로그 파일 생성)
       - name: Execute deployment script on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -80,6 +66,4 @@ jobs:
             # 기존에 실행 중이던 Java 애플리케이션 프로세스를 종료
             pgrep java | xargs kill -9 || true
             
-            # nohup으로 백그라운드 실행 시, 명령어 앞에 환경 변수를 직접 지정하여 전달
-            nohup GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/app/gcp-key.json java -jar /home/ubuntu/app/BackEnd/build/libs/*.jar > /home/ubuntu/app/app.log 2>&1 &
-
+            nohup java -jar /home/ubuntu/app/BackEnd/build/libs/*.jar  > /dev/null 2>&1 &
